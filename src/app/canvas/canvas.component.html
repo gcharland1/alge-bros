@@ -1,5 +1,4 @@
-<div class="canvasContainer"
-  (click)="this.drawRectangle(10, 10, 35, 100, 'red')">
-  <canvas #gameCanvas></canvas>
-</div>
+<canvas #gameCanvas
+  (click)="this.drawRectangle($event)">
+</canvas>
 
