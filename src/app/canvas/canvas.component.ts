@@ -30,6 +30,9 @@ export class CanvasComponent implements AfterViewInit {
 
     this.context = this.canvas.nativeElement.getContext('2d');
     this.shapeSize = this.context.canvas.height / 10;
+
+    this.gridService.generateGrid();
+
     this.runGame();
   }
 
@@ -41,7 +44,7 @@ export class CanvasComponent implements AfterViewInit {
   }
 
   placeShape(event: MouseEvent) {
-    const node: GridNode = this.gridService.getClosestNode(undefined, undefined);
+    const node: GridNode = this.gridService.getClosestNode(undefined);
     console.log(node);
     this.drawRectangle(node, "blue");
   }

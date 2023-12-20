@@ -1,5 +1,5 @@
 export interface Grid {
-  nodes: Node[]
+  nodes: GridNode[]
 }
 
 export interface GridNode {
