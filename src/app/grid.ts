@@ -5,4 +5,5 @@ export interface Grid {
 export interface GridNode {
   x: number,
   y: number
+  dist?: number;
 }

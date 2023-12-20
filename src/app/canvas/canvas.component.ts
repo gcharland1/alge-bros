@@ -37,15 +37,14 @@ export class CanvasComponent implements AfterViewInit {
   }
 
   runGame() {
-    console.log("It's on!");
-    console.log(this.context);
     this.context.fillStyle = "grey";
     this.context.fillRect(0, 0, this.canvas.nativeElement.width, this.canvas.nativeElement.height);
   }
 
   placeShape(event: MouseEvent) {
-    const node: GridNode = this.gridService.getClosestNode(undefined);
-    console.log(node);
+    const coord = {x: event.x - this.xCanvasOffset, y: event.y - this.yCanvasOffset};
+    const node: GridNode = this.gridService.getClosestNode(coord);
+
     this.drawRectangle(node, "blue");
   }
 
