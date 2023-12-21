@@ -44,6 +44,7 @@ export class CanvasComponent implements AfterViewInit {
   placeShape(event: MouseEvent) {
     const coord = {x: event.x - this.xCanvasOffset, y: event.y - this.yCanvasOffset};
     const node: GridNode = this.gridService.getClosestNode(coord);
+    console.log(node, coord);
 
     this.drawRectangle(node, "blue");
   }
