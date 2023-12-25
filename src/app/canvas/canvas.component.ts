@@ -8,6 +8,7 @@ import { GridService } from '../grid.service';
   styleUrls: ['./canvas.component.css']
 })
 export class CanvasComponent implements AfterViewInit {
+  equationString: string = 'ax + b = c';
 
   private width: number;
   private height: number;
@@ -42,6 +43,11 @@ export class CanvasComponent implements AfterViewInit {
                                            this.yCanvasOffset);
 
     this.runGame();
+  }
+
+  onSumbit(event: any): void {
+    this.equationString = event.target.value;
+    console.log(this.equationString);
   }
 
   runGame() {

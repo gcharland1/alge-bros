@@ -13,7 +13,13 @@ export class GridService {
   /**
     * Parses math equation to @EqGroup object
   */
-  parseEquation(eq: string | undefined) {
+  parseEquation(equation: string | undefined) {
+    console.log(equation.split(' ').join(''));
+    let _eq: EqGroup = {
+      grType: GroupTypeEnum.eq,
+      content: [],
+    };
+
     return {
       grType: GroupTypeEnum.eq,
       content: [
@@ -64,6 +70,7 @@ export class GridService {
         innerHeight= _grid.height / nParts;
       }
 
+      console.log("eq = ", eq);
       eq.content.forEach(function (subEq: EqGroup) {
         _grid.nodes.push({
           x: innerX,
