@@ -1,86 +1,85 @@
 import { Injectable } from '@angular/core';
-import { Grid, GridNode } from './grid';
+import { Grid, EqGroup, GroupTypeEnum} from './grid';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GridService {
-  r: number = 2;
-  c: number = 3;
-  width: number = 300;
-  height: number = 300;
-  n: number = 0;
+  equation: EqGroup;
   grid: Grid;
-  nodeArray: GridNode[];
-
 
   constructor() {}
 
-  // TODO: Pass arguments for width, height, x and y
-  generateGrid() {
-    this.grid = {
-      width: 200,
-      height: 100,
-      xCenter: 200,
-      yCenter: 250,
-      nodes: [
-        {x: 150, y: 200},
-        {x: 250, y: 200},
+  /**
+    * Parses math equation to @EqGroup object
+  */
+  parseEquation(eq: string | undefined) {
+    return {
+      grType: GroupTypeEnum.eq,
+      content: [
         {
-          x: 150,
-          y: 300,
-          grid: {
-            width: 10,
-            height: 10,
-            xCenter: 10,
-            yCenter: 10,
-            nodes: [
-              {x: 10, y: 10},
-              {x: 11, y: 21},
-              {x: 12, y: 22},
-            ]
-          },
+          grType: GroupTypeEnum.div,
+          content: [
+            {grType: GroupTypeEnum.var, content: ["x"]},
+            {grType: GroupTypeEnum.var, content: ["2"]},
+          ],
         },
-        {x: 250, y: 300},
+        {
+          grType: GroupTypeEnum.add,
+          content: [
+            {grType: GroupTypeEnum.var, content: ["x"]},
+            {grType: GroupTypeEnum.var, content: ["1"]},
+          ]
+        }
       ],
     };
-
-    this.nodeArray = this.flattenGrid(this.grid);
   }
 
-  // TODO: Make all coordinates absolute (x + xCenter, etc, etc)
-  flattenGrid(grid: Grid) : GridNode[] {
-    let flatGrid: GridNode[] = [];
-    grid.nodes.forEach( (node) => {
-      if (!node.grid) {
-        flatGrid.push(node);
+  /**
+    * Define node positions according to equation complexity
+  * Split self width and height equally between components
+  * self equation
+  */
+  convertEquationToGrid(eq: EqGroup, width: number, height: number, x: number, y: number) : Grid {
+    var self = this;
+    const horizontalTypesList = ["add", "sus", "mult", "eq"];
+
+    let _grid: Grid = {width: width, height: height, x: x, y: y, nodes: []};
+    if (!eq) { return _grid; }
+
+    let i = 0;
+    let innerX = x;
+    let innerY = y;
+    if (eq.grType === GroupTypeEnum.var) {
+      console.log("Adding variable");
+      _grid.nodes.push({x: x + width / 2, y: y + height / 2});
+    } else {
+      const nParts: number = eq.content.length;
+      let innerWidth, innerHeight;
+      if (horizontalTypesList.includes(eq.grType)) {
+        innerWidth = _grid.width / nParts;
+        innerHeight = _grid.height;
       } else {
-        flatGrid = flatGrid.concat(this.flattenGrid(node.grid));
+        innerWidth= _grid.width;
+        innerHeight= _grid.height / nParts;
       }
-    });
 
-    return flatGrid.flat();
-  }
+      eq.content.forEach(function (subEq: EqGroup) {
+        _grid.nodes.push({
+          x: innerX,
+          y: innerY,
+          grid: self.convertEquationToGrid(subEq, innerWidth, innerHeight, innerX, innerY)
+        });
 
-  getClosestNode(coord: {x: number, y: number}) : GridNode {
-    this.grid = this.computeDistanceToNodes(coord, this.grid);
-    const nodeArray = this.flattenGrid(this.grid);
-
-    const min = Math.min(...nodeArray.map(n => n.dist));
-
-    return nodeArray.filter(n => n.dist === min)[0];
-  }
-
-  computeDistanceToNodes(coord: {x:number, y:number}, grid?: Grid) {
-    const _grid = grid || this.grid;
-
-    _grid.nodes.map((n: GridNode) => {
-      n.dist = Math.sqrt((n.x - coord.x)**2 + (n.y - coord.y)**2)
-      // If node is a grid node, calculate distance recursively
-      if (n.grid) {
-        n.grid = this.computeDistanceToNodes(coord, n.grid);
-      }
-    });
+        // Does the group goes down horizontally or vertically? (Divisions are vertical, mult horizontal)
+        if (horizontalTypesList.includes(eq.grType)) {
+          innerX += innerWidth;
+        } else {
+          innerY += innerHeight;
+        }
+        i++;
+      })
+    }
 
     return _grid;
   }

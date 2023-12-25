@@ -1,4 +1,16 @@
-import { sha1 } from "@angular/compiler/src/i18n/digest";
+export interface EqGroup {
+  grType: GroupTypeEnum,
+  content: any[],
+}
+
+export enum GroupTypeEnum {
+  eq = "eq",
+  var = "var",
+  add = "add",
+  sub = "sub",
+  mul = "mult",
+  div = "div",
+}
 
 export interface GridNode {
   x: number,
@@ -10,8 +22,8 @@ export interface GridNode {
 export interface Grid {
   width: number,
   height: number,
-  xCenter: number,
-  yCenter: number,
+  x: number,
+  y: number,
   nodes: GridNode[],
 }
 
