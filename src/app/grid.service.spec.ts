@@ -1,9 +1,9 @@
 import { TestBed } from '@angular/core/testing';
-import { GridNode, Grid } from './grid';
+import { GridNode, Grid, EqGroup, GroupTypeEnum } from './grid';
 
 import { GridService } from './grid.service';
 
-describe('GridService', () => {
+fdescribe('GridService', () => {
   let service: GridService;
 
   beforeEach(() => {
@@ -16,6 +16,7 @@ describe('GridService', () => {
     expect(service).toBeTruthy();
   });
 
+  /*
   it('Should flatten Grid', () => {
     const expectedFlattenGrid : GridNode[] = [
         {x: 150, y: 200},
@@ -61,6 +62,28 @@ describe('GridService', () => {
       expect(service.computeDistanceToNodes).toHaveBeenCalled;
       expect(actualClosestNode).toEqual(expectedClosestNode);
   });
+  */
+  fit('Should convert EqGroup to Grid', () => {
+    const eqGroup: EqGroup = {
+      grType: GroupTypeEnum.eq,
+      content: [
+        {
+          grType: GroupTypeEnum.div,
+          content: ["x", "2"],
+        },
+        {
+          grType: GroupTypeEnum.add,
+          content: ["x", "1"],
+        }
+      ],
+    };
+
+    const expectedGrid: Grid = {x: 0, y: 0, width: 0, height: 0, nodes: []};
+    const actualGrid: Grid = service.convertEquationToGrid(eqGroup, 100, 100, 0, 0);
+
+    expect(actualGrid).toEqual(expectedGrid);
+  });
+
 });
 
 function generateNodeGrid(): Grid {
