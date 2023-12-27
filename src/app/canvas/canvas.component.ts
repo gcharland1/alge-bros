@@ -8,7 +8,7 @@ import { GridService } from '../grid.service';
   styleUrls: ['./canvas.component.css']
 })
 export class CanvasComponent implements AfterViewInit {
-  equationString: string = 'ax + b = c';
+  equationString: string = 'a*x + b = c';
 
   private width: number;
   private height: number;
@@ -34,20 +34,19 @@ export class CanvasComponent implements AfterViewInit {
     this.context = this.canvas.nativeElement.getContext('2d');
     this.shapeSize = this.height / 10;
 
-    const startingEquation = "ax + b";
-    this.equation = this.gridService.parseEquation(startingEquation);
+    this.equation = this.gridService.parseEquation(this.equationString);
     this.grid = this.gridService.convertEquationToGrid(this.equation,
                                            this.width,
                                            this.height,
-                                           this.xCanvasOffset,
-                                           this.yCanvasOffset);
+                                           0,
+                                           0);
 
     this.runGame();
   }
 
   onSumbit(event: any): void {
     this.equationString = event.target.value;
-    console.log(this.equationString);
+    this.gridService.parseEquation(this.equationString);
   }
 
   runGame() {
@@ -58,6 +57,8 @@ export class CanvasComponent implements AfterViewInit {
   }
 
   drawEquationGrid(nodeArray: GridNode[]) {
+    const subGroupBackgroundColors = ["yellow", "red", "green", "pink", "grey"];
+
     for (let n in nodeArray) {
       let equationNode: GridNode = nodeArray[n];
       if (equationNode.grid) {
