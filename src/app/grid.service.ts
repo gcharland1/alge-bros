@@ -27,6 +27,7 @@ export class GridService {
       equation.split('=').forEach((eqPart) => {
         _eq.content.push(this.parseEquation(eqPart, GroupTypeEnum.add));
       });
+      return _eq;
     }
     // Switch case dans les autres cas ?
     switch (priorityLevel) {
@@ -36,13 +37,12 @@ export class GridService {
         });
         break;
       case GroupTypeEnum.mul:
-        console.log('mult');
         this.splitEquationIntoComponents(equation, priorityLevel).forEach((_) => {
           _eq.content.push(this.parseEquation(_, GroupTypeEnum.var))
         });
         break;
     }
-    console.log(_eq);
+
     return _eq;
 //    return {
 //      grType: GroupTypeEnum.eq,
@@ -89,11 +89,9 @@ export class GridService {
     let i = 0;
     let innerX = x;
     let innerY = y;
-    console.log('Avant: ', eq);
     if (eq.grType === GroupTypeEnum.var) {
       _grid.nodes.push({x: x + width / 2, y: y + height / 2});
     } else {
-      console.log(eq.content);
       const nParts: number = eq.content.length;
       let innerWidth: number, innerHeight: number;
 

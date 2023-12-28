@@ -46,14 +46,20 @@ export class CanvasComponent implements AfterViewInit {
 
   onSumbit(event: any): void {
     this.equationString = event.target.value;
-    this.gridService.parseEquation(this.equationString);
+    this.equation = this.gridService.parseEquation(this.equationString);
+    this.grid = this.gridService.convertEquationToGrid(this.equation, this.width, this.height, 0, 0);
+    this.reprint();
   }
 
-  runGame() {
+  reprint() {
     this.context.fillStyle = "grey";
     this.context.fillRect(0, 0, this.width, this.height);
 
     this.drawEquationGrid(this.grid.nodes);
+  }
+
+  runGame() {
+    this.reprint();
   }
 
   drawEquationGrid(nodeArray: GridNode[]) {
