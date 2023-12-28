@@ -17,6 +17,7 @@ export interface GridNode {
   y: number,
   dist?: number,
   grid?: Grid,
+  operator?: GroupTypeEnum,
 }
 
 export interface Grid {
@@ -25,9 +26,4 @@ export interface Grid {
   x: number,
   y: number,
   nodes: GridNode[],
-}
-
-export enum NodeType {
-  position,
-  grid,
 }

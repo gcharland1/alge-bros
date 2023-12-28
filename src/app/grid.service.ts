@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { concat } from 'rxjs/operators';
 import { Grid, EqGroup, GroupTypeEnum} from './grid';
 
 @Injectable({
@@ -99,7 +98,11 @@ export class GridService {
     let innerX = x;
     let innerY = y;
     if (eq.grType === GroupTypeEnum.var) {
-      _grid.nodes.push({x: x + width / 2, y: y + height / 2});
+      _grid.nodes.push({
+        x: x + width / 2,
+        y: y + height / 2,
+        operator: eq.grType,
+      });
     } else {
       const nParts: number = eq.content.length;
       let innerWidth: number, innerHeight: number;
@@ -116,6 +119,7 @@ export class GridService {
         _grid.nodes.push({
           x: innerX,
           y: innerY,
+          operator: subEq.grType,
           grid: self.convertEquationToGrid(subEq, innerWidth, innerHeight, innerX, innerY)
         });
 
