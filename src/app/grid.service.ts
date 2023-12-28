@@ -7,6 +7,7 @@ import { Grid, EqGroup, GroupTypeEnum} from './grid';
 export class GridService {
   equation: EqGroup;
   grid: Grid;
+  horizontalTypesList = ["add", "sus", "mult", "eq"];
 
   constructor() {}
 
@@ -89,7 +90,6 @@ export class GridService {
   */
   convertEquationToGrid(eq: EqGroup, width: number, height: number, x: number, y: number) : Grid {
     var self = this;
-    const horizontalTypesList = ["add", "sus", "mult", "eq"];
 
     let _grid: Grid = {width: width, height: height, x: x, y: y, nodes: []};
     if (!eq) { return _grid; }
@@ -107,7 +107,7 @@ export class GridService {
       const nParts: number = eq.content.length;
       let innerWidth: number, innerHeight: number;
 
-      if (horizontalTypesList.includes(eq.grType)) {
+      if (this.horizontalTypesList.includes(eq.grType)) {
         innerWidth = _grid.width / nParts;
         innerHeight = _grid.height;
       } else {
@@ -124,7 +124,7 @@ export class GridService {
         });
 
         // Does the group goes down horizontally or vertically? (Divisions are vertical, mult horizontal)
-        if (horizontalTypesList.includes(eq.grType)) {
+        if (self.horizontalTypesList.includes(eq.grType)) {
           innerX += innerWidth;
         } else {
           innerY += innerHeight;

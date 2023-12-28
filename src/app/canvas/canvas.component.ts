@@ -84,44 +84,56 @@ export class CanvasComponent implements AfterViewInit {
     }
 
     grid.nodes.forEach((node) => {
-      if (node.grid) {
+      if (node.operator === GroupTypeEnum.var) {
+        const x = node.grid.nodes[0].x;
+        const y = node.grid.nodes[0].y;
+        this.drawVariable(x, y, "blue");
+      } else {
         this.drawOperator(node);
         this.drawEquationGrid(node.grid);
-      } else {
-        this.drawVariable(node.x, node.y, "blue");
       }
     });
   }
 
   drawOperator(node: GridNode) {
-    this.context.fillStyle = "black";
-    this.context.font = "48px mono";
-    const operatorSize = 30;
-    const lineWidth = 5;
+    const numberOfElements = node.grid.nodes.length || 2;
 
-    const operatorX = node.grid.width/2 + node.x;
-    const operatorY = node.grid.height/2 + node.y;
-
-    switch (node.operator) {
-      case GroupTypeEnum.add:
-        this.context.fillText("+", operatorX - operatorSize/2, operatorY + operatorSize/2, operatorSize);
-        break;
-      case GroupTypeEnum.div:
-        const diviserWidth = node.grid.width * 0.5;
-        this.context.fillRect(operatorX - diviserWidth/2, operatorY, diviserWidth, lineWidth);
-        break;
-      case GroupTypeEnum.mul:
-        this.context.fillText("x", operatorX - operatorSize/2, operatorY + operatorSize/2, operatorSize);
-        break;
-      case GroupTypeEnum.eq:
-        this.context.fillText("=", operatorX - operatorSize/2, operatorY + operatorSize/2);
+    for (let i=1; i<numberOfElements; i++) {
+      let operatorX: number, operatorY:number;
+      if (this.gridService.horizontalTypesList.includes(node.operator)) {
+        operatorX = (1 - i/numberOfElements)*node.grid.width + node.x;
+        operatorY = node.grid.height/2 + node.y;
+      } else {
+        operatorX = node.grid.width/2 + node.x;
+        operatorY = (1 - i/numberOfElements)*node.grid.height + node.y;
+      }
+      this.drawMathOperator(node.operator, operatorX, operatorY, "black");
     }
   }
 
-  /**
-   * @param {number} x The center of the variable
-   * @param {number} y The center of the variable
-   */
+  drawMathOperator(op: GroupTypeEnum, x: number, y: number, color: string) {
+    this.context.fillStyle = color || "black";
+    this.context.font = "48px mono";
+    const operatorSize = 25;
+
+    x = x - operatorSize / 2;
+    y = y + operatorSize / 2;
+    switch (op) {
+      case GroupTypeEnum.add:
+        this.context.fillText("+", x, y);
+        break;
+      case GroupTypeEnum.div:
+        this.context.fillText("/", x, y);
+        break;
+      case GroupTypeEnum.mul:
+        this.context.fillText("x", x, y);
+        break;
+      case GroupTypeEnum.eq:
+        this.context.fillText("=", x, y);
+    }
+
+  }
+
   drawVariable(x: number, y: number, color: string) {
     x = x - (this.shapeSize / 2);
     y = y - (this.shapeSize / 2);
