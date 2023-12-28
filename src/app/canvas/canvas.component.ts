@@ -34,7 +34,7 @@ export class CanvasComponent implements AfterViewInit {
     this.context = this.canvas.nativeElement.getContext('2d');
     this.shapeSize = this.height / 10;
 
-    this.equation = this.gridService.parseEquation(this.equationString);
+    this.equation = this.gridService.parseEquation(this.equationString, GroupTypeEnum.eq);
     this.grid = this.gridService.convertEquationToGrid(this.equation,
                                            this.width,
                                            this.height,
@@ -46,7 +46,7 @@ export class CanvasComponent implements AfterViewInit {
 
   onSumbit(event: any): void {
     this.equationString = event.target.value;
-    this.equation = this.gridService.parseEquation(this.equationString);
+    this.equation = this.gridService.parseEquation(this.equationString, GroupTypeEnum.eq);
     this.grid = this.gridService.convertEquationToGrid(this.equation, this.width, this.height, 0, 0);
     this.reprint();
   }
