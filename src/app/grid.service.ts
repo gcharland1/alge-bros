@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Grid, EqGroup, GroupTypeEnum} from './grid';
+import { Grid, EqGroup, GroupTypeEnum, GridNode} from './grid';
 
 @Injectable({
   providedIn: 'root'
@@ -10,6 +10,35 @@ export class GridService {
   horizontalTypesList = ["add", "sus", "mult", "eq"];
 
   constructor() {}
+
+  getClosestNode(grid: Grid, x: number, y: number): GridNode {
+    const self = this
+    const nodeArray = grid.nodes;
+    let closestNode: GridNode;
+
+    nodeArray.forEach((node) => {
+      console.log(node);
+      if (node.operator === GroupTypeEnum.var) {
+        const actualNode = node.grid.nodes[0];
+        if (!closestNode) {
+          closestNode = actualNode;
+        } else if (this.getDistanceToNode(actualNode, x, y) < this.getDistanceToNode(closestNode, x, y)) {
+          closestNode = actualNode;
+        }
+      } else {
+        const childClosestNode = self.getClosestNode(node.grid, x, y);
+        if (!closestNode || this.getDistanceToNode(childClosestNode, x, y) < this.getDistanceToNode(closestNode, x, y)) {
+          closestNode = childClosestNode;
+        }
+      }
+    });
+
+    return closestNode
+  }
+
+  getDistanceToNode(node: GridNode, x: number, y: number): number {
+    return (node.x - x)**2 + (node.y - y)**2;
+  }
 
   /**
     * Parses math equation to @EqGroup object

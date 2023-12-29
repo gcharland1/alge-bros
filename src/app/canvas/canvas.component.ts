@@ -27,7 +27,7 @@ export class CanvasComponent implements AfterViewInit {
   @ViewChild('gameCanvas', {static: false, read: ElementRef}) canvas: ElementRef;
   context: CanvasRenderingContext2D;
 
-  constructor(private gridService: GridService, private mouseService: MouseService) {}
+  constructor(private gridService: GridService, private mouse: MouseService) {}
 
 
   ngAfterViewInit(): void {
@@ -58,11 +58,13 @@ export class CanvasComponent implements AfterViewInit {
   }
 
   onMouseClick(event: any): void {
-    this.mouseService.handleMouseEvent(event);
+    const closestNode = this.gridService.getClosestNode(this.grid, event.x, event.y);
+    this.drawVariable(closestNode.x, closestNode.y, "green");
+    this.mouse.handleMouseEvent(event);
   }
 
   onMouseMove(event: any): void {
-    if (!this.mouseService.isDragging) {
+    if (!this.mouse.isDragging) {
       return;
     }
     this.animateDrag(event);
