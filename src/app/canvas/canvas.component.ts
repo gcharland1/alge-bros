@@ -1,6 +1,7 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { GridNode, Grid, EqGroup, GroupTypeEnum } from '../grid';
 import { GridService } from '../grid.service';
+import { MouseService } from '../mouse.service';
 
 @Component({
   selector: 'app-canvas',
@@ -26,7 +27,8 @@ export class CanvasComponent implements AfterViewInit {
   @ViewChild('gameCanvas', {static: false, read: ElementRef}) canvas: ElementRef;
   context: CanvasRenderingContext2D;
 
-  constructor(private gridService: GridService) {}
+  constructor(private gridService: GridService, private mouseService: MouseService) {}
+
 
   ngAfterViewInit(): void {
     this.width = this.canvas.nativeElement.width = window.innerWidth - this.canvas.nativeElement.offsetLeft;
@@ -53,6 +55,24 @@ export class CanvasComponent implements AfterViewInit {
     this.equation = this.gridService.parseEquation(this.equationString, GroupTypeEnum.eq);
     this.grid = this.gridService.convertEquationToGrid(this.equation, this.width, this.height, 0, 0);
     this.reprint();
+  }
+
+  onMouseClick(event: any): void {
+    this.mouseService.handleMouseEvent(event);
+  }
+
+  onMouseMove(event: any): void {
+    if (!this.mouseService.isDragging) {
+      return;
+    }
+    this.animateDrag(event);
+  }
+
+  animateDrag(event: MouseEvent) {
+    this.reprint();
+    const x = event.x - this.xCanvasOffset;
+    const y = event.y - this.yCanvasOffset;
+    this.drawVariable(x, y, "yellow");
   }
 
   reprint() {
