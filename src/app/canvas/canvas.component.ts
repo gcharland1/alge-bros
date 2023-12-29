@@ -20,6 +20,8 @@ export class CanvasComponent implements AfterViewInit {
   private equation: EqGroup;
   private grid: Grid;
 
+  private draggedNode: GridNode;
+
   private defaultVariableColor = "blue";
   private subGroupBackgroundColors = ["yellow", "red", "green", "pink", "grey"];
   private backgroundColorIndex = 0;
@@ -58,22 +60,29 @@ export class CanvasComponent implements AfterViewInit {
   }
 
   onMouseClick(event: any): void {
-    const closestNode = this.gridService.getClosestNode(this.grid, event.x, event.y);
-    this.drawVariable(closestNode.x, closestNode.y, "green");
+    const closestNode: GridNode = this.gridService.getClosestNode(this.grid, event.x, event.y);
     this.mouse.handleMouseEvent(event);
+    if (this.mouse.isDragging) {
+      this.draggedNode = closestNode;
+    } else {
+      this.animateDrag(closestNode.x, closestNode.y, this.draggedNode.x, this.draggedNode.y, false);
+    }
   }
 
   onMouseMove(event: any): void {
     if (!this.mouse.isDragging) {
       return;
     }
-    this.animateDrag(event);
+    this.animateDrag(event.x, event.y, this.draggedNode.x, this.draggedNode.y, true);
   }
 
-  animateDrag(event: MouseEvent) {
+  animateDrag(x: number, y: number, x0: number, y0: number, offset?: boolean) {
     this.reprint();
-    const x = event.x - this.xCanvasOffset;
-    const y = event.y - this.yCanvasOffset;
+    this.drawVariable(x0, y0, "green");
+    if (offset) {
+      x = x - this.xCanvasOffset;
+      y = y - this.yCanvasOffset;
+    }
     this.drawVariable(x, y, "yellow");
   }
 
