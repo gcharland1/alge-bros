@@ -17,7 +17,6 @@ export class GridService {
     let closestNode: GridNode;
 
     nodeArray.forEach((node) => {
-      console.log(node);
       if (node.operator === GroupTypeEnum.var) {
         const actualNode = node.grid.nodes[0];
         if (!closestNode) {
