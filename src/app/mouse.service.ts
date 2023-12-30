@@ -16,7 +16,6 @@ export class MouseService {
   }
 
   handleMouseEvent(event: MouseEvent) {
-    console.log(event);
     switch (event.buttons) {
       case 1:
         this.onclick(event);
