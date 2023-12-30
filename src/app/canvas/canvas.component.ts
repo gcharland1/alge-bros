@@ -62,7 +62,7 @@ export class CanvasComponent implements AfterViewInit {
   onMouseClick(event: any): void {
     // CENTER OF CLICK CALISS
     const x = event.x - this.xCanvasOffset;
-    const y = event.y - this.yCanvasOffset;
+    const y = event.y - this.yCanvasOffset + this.shapeSize/2;
     const closestNode: GridNode = this.gridService.getClosestNode(this.grid, x, y);
     if (this.mouse.isDragging || !this.draggedNode ) {
       this.draggedNode = closestNode;
@@ -86,6 +86,11 @@ export class CanvasComponent implements AfterViewInit {
     this.reprint();
     this.drawVariable(x0, y0, "green");
     this.drawVariable(x, y, "yellow");
+  }
+
+  drawVariable(x: number, y: number, color: string) {
+    this.context.fillStyle = color || this.defaultVariableColor;
+    this.context.fillRect(x - this.shapeSize/2, y - this.shapeSize/2, this.shapeSize, this.shapeSize);
   }
 
   reprint() {
@@ -165,10 +170,5 @@ export class CanvasComponent implements AfterViewInit {
         this.context.fillText("=", x, y);
     }
 
-  }
-
-  drawVariable(x: number, y: number, color: string) {
-    this.context.fillStyle = color || this.defaultVariableColor;
-    this.context.fillRect(x - this.shapeSize/2, y - this.shapeSize/2, this.shapeSize, this.shapeSize);
   }
 }
