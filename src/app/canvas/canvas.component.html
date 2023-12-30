@@ -1,4 +1,8 @@
+<input (keyup.enter)="onSumbit($event)" />
+<p>{{ equationString }}</p>
+
 <canvas #gameCanvas
-  (click)="this.drawRectangle($event)">
-</canvas>
+    (document:mousedown)="onMouseClick($event)"
+    (document:mousemove)="onMouseMove($event)"
+    ></canvas>
 
