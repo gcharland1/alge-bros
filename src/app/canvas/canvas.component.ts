@@ -60,20 +60,25 @@ export class CanvasComponent implements AfterViewInit {
   }
 
   onMouseClick(event: any): void {
-    const closestNode: GridNode = this.gridService.getClosestNode(this.grid, event.x, event.y);
-    this.mouse.handleMouseEvent(event);
-    if (this.mouse.isDragging) {
+    const x = event.x - this.xCanvasOffset;
+    const y = event.y - this.yCanvasOffset + this.shapeSize/2;
+    const closestNode: GridNode = this.gridService.getClosestNode(this.grid, x, y);
+    if (this.mouse.isDragging || !this.draggedNode ) {
       this.draggedNode = closestNode;
+      this.drawVariable(closestNode.x, closestNode.y, "pink");
     } else {
-      this.animateDrag(closestNode.x, closestNode.y, this.draggedNode.x, this.draggedNode.y, false);
+      this.animateDrag(x, y, this.draggedNode.x, this.draggedNode.y);
     }
+    this.mouse.handleMouseEvent(event);
   }
 
   onMouseMove(event: any): void {
     if (!this.mouse.isDragging) {
       return;
     }
-    this.animateDrag(event.x, event.y, this.draggedNode.x, this.draggedNode.y, true);
+    const x = event.x - this.xCanvasOffset;
+    const y = event.y - this.yCanvasOffset + this.shapeSize/2;
+    this.animateDrag(x, y, this.draggedNode.x, this.draggedNode.y);
   }
 
   animateDrag(x: number, y: number, x0: number, y0: number, offset?: boolean) {
@@ -81,7 +86,7 @@ export class CanvasComponent implements AfterViewInit {
     this.drawVariable(x0, y0, "green");
     if (offset) {
       x = x - this.xCanvasOffset;
-      y = y - this.yCanvasOffset;
+      y = y - this.yCanvasOffset + this.shapeSize/2;
     }
     this.drawVariable(x, y, "yellow");
   }
@@ -97,7 +102,7 @@ export class CanvasComponent implements AfterViewInit {
     this.reprint();
   }
 
-  drawEquationGrid(grid: Grid, drawEqualSign?: boolean | undefined) {
+  drawEquationGrid(grid: Grid, drawEqualSign?: boolean) {
     if (drawEqualSign) {
       const eqNode: GridNode = {
         x: 0,
