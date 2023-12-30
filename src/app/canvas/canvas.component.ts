@@ -60,6 +60,7 @@ export class CanvasComponent implements AfterViewInit {
   }
 
   onMouseClick(event: any): void {
+    // CENTER OF CLICK CALISS
     const x = event.x - this.xCanvasOffset;
     const y = event.y - this.yCanvasOffset + this.shapeSize/2;
     const closestNode: GridNode = this.gridService.getClosestNode(this.grid, x, y);
@@ -81,14 +82,15 @@ export class CanvasComponent implements AfterViewInit {
     this.animateDrag(x, y, this.draggedNode.x, this.draggedNode.y);
   }
 
-  animateDrag(x: number, y: number, x0: number, y0: number, offset?: boolean) {
+  animateDrag(x: number, y: number, x0: number, y0: number) {
     this.reprint();
     this.drawVariable(x0, y0, "green");
-    if (offset) {
-      x = x - this.xCanvasOffset;
-      y = y - this.yCanvasOffset + this.shapeSize/2;
-    }
     this.drawVariable(x, y, "yellow");
+  }
+
+  drawVariable(x: number, y: number, color: string) {
+    this.context.fillStyle = color || this.defaultVariableColor;
+    this.context.fillRect(x - this.shapeSize/2, y - this.shapeSize/2, this.shapeSize, this.shapeSize);
   }
 
   reprint() {
@@ -168,13 +170,5 @@ export class CanvasComponent implements AfterViewInit {
         this.context.fillText("=", x, y);
     }
 
-  }
-
-  drawVariable(x: number, y: number, color: string) {
-    x = x - (this.shapeSize / 2);
-    y = y - (this.shapeSize / 2);
-
-    this.context.fillStyle = color || this.defaultVariableColor;
-    this.context.fillRect(x, y, this.shapeSize, this.shapeSize);
   }
 }
