@@ -63,11 +63,11 @@ export class CanvasComponent implements AfterViewInit {
     const x = event.x - this.xCanvasOffset;
     const y = event.y - this.yCanvasOffset + this.shapeSize/2;
     const closestNode: GridNode = this.gridService.getClosestNode(this.grid, x, y);
-    if (this.mouse.isDragging || !this.draggedNode ) {
-      this.draggedNode = closestNode;
+    if (this.mouse.isDragging) {
       this.drawVariable(closestNode.x, closestNode.y, "pink");
     } else {
-      this.animateDrag(x, y, this.draggedNode.x, this.draggedNode.y);
+      this.draggedNode = closestNode;
+      this.animateDrag(x, y, closestNode.x, closestNode.y);
     }
     this.mouse.handleMouseEvent(event);
   }
