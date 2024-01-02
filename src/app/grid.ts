@@ -12,18 +12,11 @@ export enum GroupTypeEnum {
   div = "div",
 }
 
-export interface GridNode {
-  x: number,
-  y: number,
-  dist?: number,
-  grid?: Grid,
-  operator?: GroupTypeEnum,
-}
-
 export interface Grid {
   width: number,
   height: number,
   x: number,
   y: number,
-  nodes: GridNode[],
+  nodes?: Grid[],
+  operator?: GroupTypeEnum,
 }

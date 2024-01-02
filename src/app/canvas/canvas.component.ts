@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
-import { GridNode, Grid, EqGroup, GroupTypeEnum } from '../grid';
+import { Grid, EqGroup, GroupTypeEnum } from '../grid';
 import { GridService } from '../grid.service';
 import { MouseService } from '../mouse.service';
 
@@ -20,7 +20,7 @@ export class CanvasComponent implements AfterViewInit {
   private equation: EqGroup;
   private grid: Grid;
 
-  private draggedNode: GridNode;
+  private draggedNode: Grid;
 
   private defaultVariableColor = "blue";
 
@@ -41,6 +41,7 @@ export class CanvasComponent implements AfterViewInit {
     this.shapeSize = this.height / 10;
 
     this.equation = this.gridService.parseEquation(this.equationString, GroupTypeEnum.eq);
+    console.log(this.equation);
     this.grid = this.gridService.convertEquationToGrid(this.equation,
                                            this.width,
                                            this.height,
@@ -60,7 +61,7 @@ export class CanvasComponent implements AfterViewInit {
   onMouseClick(event: any): void {
     const x = event.x - this.xCanvasOffset;
     const y = event.y - this.yCanvasOffset;
-    const closestNode: GridNode = this.gridService.getClosestNode(this.grid, x, y);
+    const closestNode: Grid = this.gridService.getClosestNode(this.grid, x, y);
     if (this.mouse.isDragging ) {
       this.animateDrag(closestNode.x, closestNode.y, this.draggedNode.x, this.draggedNode.y)
     } else {
@@ -105,16 +106,12 @@ export class CanvasComponent implements AfterViewInit {
 
   drawEquationGrid(grid: Grid, drawEqualSign?: boolean) {
     if (drawEqualSign) {
-      const eqNode: GridNode = {
+      const eqNode: Grid = {
         x: 0,
         y: 0,
-        grid: {
-          x: 0,
-          y: 0,
-          width: this.width,
-          height: this.height,
-          nodes: []
-        },
+        width: this.width,
+        height: this.height,
+        nodes: [],
         operator: GroupTypeEnum.eq,
       }
       this.drawOperator(eqNode);
@@ -122,27 +119,27 @@ export class CanvasComponent implements AfterViewInit {
 
     grid.nodes.forEach((node) => {
       if (node.operator === GroupTypeEnum.var) {
-        const x = node.grid.nodes[0].x;
-        const y = node.grid.nodes[0].y;
+        const x = node.x;
+        const y = node.y;
         this.drawVariable(x, y, "blue");
       } else {
         this.drawOperator(node);
-        this.drawEquationGrid(node.grid);
+        this.drawEquationGrid(node);
       }
     });
   }
 
-  drawOperator(node: GridNode) {
-    const numberOfElements = node.grid.nodes.length || 2;
+  drawOperator(node: Grid) {
+    const numberOfElements = node.nodes.length || 2;
 
     for (let i=1; i<numberOfElements; i++) {
       let operatorX: number, operatorY:number;
       if (this.gridService.horizontalTypesList.includes(node.operator)) {
-        operatorX = (1 - i/numberOfElements)*node.grid.width + node.x;
-        operatorY = node.grid.height/2 + node.y;
+        operatorX = (1 - i/numberOfElements)*node.width + node.x;
+        operatorY = node.height/2 + node.y;
       } else {
-        operatorX = node.grid.width/2 + node.x;
-        operatorY = (1 - i/numberOfElements)*node.grid.height + node.y;
+        operatorX = node.width/2 + node.x;
+        operatorY = (1 - i/numberOfElements)*node.height + node.y;
       }
       this.drawMathOperator(node.operator, operatorX, operatorY, "black");
     }
