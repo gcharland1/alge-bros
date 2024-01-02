@@ -123,7 +123,8 @@ export class GridService {
         height,
         x: x + width/2,
         y: y + height/2,
-        operator: eq.grType,
+        operator: GroupTypeEnum.var,
+        isX: eq.content[0] === "x",
       }
     }
 

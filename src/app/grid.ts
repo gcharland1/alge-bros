@@ -19,4 +19,5 @@ export interface Grid {
   y: number,
   nodes?: Grid[],
   operator?: GroupTypeEnum,
+  isX?: boolean,
 }

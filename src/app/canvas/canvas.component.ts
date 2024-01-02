@@ -41,13 +41,11 @@ export class CanvasComponent implements AfterViewInit {
     this.shapeSize = this.height / 10;
 
     this.equation = this.gridService.parseEquation(this.equationString, GroupTypeEnum.eq);
-    console.log(this.equation);
     this.grid = this.gridService.convertEquationToGrid(this.equation,
                                            this.width,
                                            this.height,
                                            0,
                                            0);
-
     this.runGame();
   }
 
@@ -62,11 +60,17 @@ export class CanvasComponent implements AfterViewInit {
     const x = event.x - this.xCanvasOffset;
     const y = event.y - this.yCanvasOffset;
     const closestNode: Grid = this.gridService.getClosestNode(this.grid, x, y);
-    if (this.mouse.isDragging ) {
-      this.animateDrag(closestNode.x, closestNode.y, this.draggedNode.x, this.draggedNode.y)
+    const mouseNode = {
+      x,
+      y,
+      width: 0,
+      height: 0,
+    }
+    if (this.mouse.isDragging) {
+      this.animateDrag(closestNode, this.draggedNode)
     } else {
       this.draggedNode = closestNode;
-      this.animateDrag(x, y, this.draggedNode.x, this.draggedNode.y);
+      this.animateDrag(mouseNode, closestNode);
     }
     this.mouse.handleMouseEvent(event);
   }
@@ -75,53 +79,54 @@ export class CanvasComponent implements AfterViewInit {
     if (!this.mouse.isDragging) {
       return;
     }
-    const x = event.x - this.xCanvasOffset;
-    const y = event.y - this.yCanvasOffset;
-    this.animateDrag(x, y, this.draggedNode.x, this.draggedNode.y);
+    const mouseNode: Grid = {
+      x: event.x - this.xCanvasOffset,
+      y: event.y - this.yCanvasOffset,
+      width: 0,
+      height: 0,
+    }
+    this.animateDrag(mouseNode, this.draggedNode);
   }
 
-  animateDrag(x: number, y: number, x0: number, y0: number) {
-    const initialVariableColor = "green"
-    const draggedVariableColor = "yellow"
+  animateDrag(draggedNode: Grid, initialNode: Grid) {
+    const initialVariableColor = initialNode.isX ? "#aa5555" : "green"
+    const draggedVariableColor = initialNode.isX ? "#ff3333" : "yellow"
+
     this.reprint();
-    this.drawVariable(x0, y0, initialVariableColor);
-    this.drawVariable(x, y, draggedVariableColor);
+    this.drawVariable(initialNode, initialVariableColor);
+    this.drawVariable(draggedNode, draggedVariableColor);
   }
 
-  drawVariable(x: number, y: number, color: string) {
-    this.context.fillStyle = color || this.defaultVariableColor;
-    this.context.fillRect(x - this.shapeSize/2, y - this.shapeSize/2, this.shapeSize, this.shapeSize);
+  drawVariable(node: Grid, color?: string) {
+    const _color = node.isX ? "red" : color || this.defaultVariableColor;
+    this.context.fillStyle = _color;
+
+    const x = node.x - this.shapeSize/2;
+    const y = node.y - this.shapeSize/2;
+    this.context.fillRect(x, y, this.shapeSize, this.shapeSize);
   }
 
   reprint() {
     this.context.fillStyle = "grey";
     this.context.fillRect(0, 0, this.width, this.height);
 
-    this.drawEquationGrid(this.grid, true);
+    this.drawEquationGrid(this.grid);
   }
 
   runGame() {
     this.reprint();
   }
 
-  drawEquationGrid(grid: Grid, drawEqualSign?: boolean) {
-    if (drawEqualSign) {
-      const eqNode: Grid = {
-        x: 0,
-        y: 0,
-        width: this.width,
-        height: this.height,
-        nodes: [],
-        operator: GroupTypeEnum.eq,
-      }
-      this.drawOperator(eqNode);
+  drawEquationGrid(grid: Grid) {
+    if (grid.operator === GroupTypeEnum.eq) {
+      this.drawOperator(grid);
     }
 
     grid.nodes.forEach((node) => {
       if (node.operator === GroupTypeEnum.var) {
         const x = node.x;
         const y = node.y;
-        this.drawVariable(x, y, "blue");
+        this.drawVariable(node);
       } else {
         this.drawOperator(node);
         this.drawEquationGrid(node);
@@ -165,6 +170,5 @@ export class CanvasComponent implements AfterViewInit {
       case GroupTypeEnum.eq:
         this.context.fillText("=", x, y);
     }
-
   }
 }
