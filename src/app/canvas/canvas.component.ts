@@ -23,8 +23,6 @@ export class CanvasComponent implements AfterViewInit {
   private draggedNode: GridNode;
 
   private defaultVariableColor = "blue";
-  private subGroupBackgroundColors = ["yellow", "red", "green", "pink", "grey"];
-  private backgroundColorIndex = 0;
 
   @ViewChild('gameCanvas', {static: false, read: ElementRef}) canvas: ElementRef;
   context: CanvasRenderingContext2D;
@@ -60,14 +58,13 @@ export class CanvasComponent implements AfterViewInit {
   }
 
   onMouseClick(event: any): void {
-    // CENTER OF CLICK CALISS
     const x = event.x - this.xCanvasOffset;
-    const y = event.y - this.yCanvasOffset + this.shapeSize/2;
+    const y = event.y - this.yCanvasOffset;
     const closestNode: GridNode = this.gridService.getClosestNode(this.grid, x, y);
-    if (this.mouse.isDragging || !this.draggedNode ) {
-      this.draggedNode = closestNode;
-      this.drawVariable(closestNode.x, closestNode.y, "pink");
+    if (this.mouse.isDragging ) {
+      this.animateDrag(closestNode.x, closestNode.y, this.draggedNode.x, this.draggedNode.y)
     } else {
+      this.draggedNode = closestNode;
       this.animateDrag(x, y, this.draggedNode.x, this.draggedNode.y);
     }
     this.mouse.handleMouseEvent(event);
@@ -78,14 +75,16 @@ export class CanvasComponent implements AfterViewInit {
       return;
     }
     const x = event.x - this.xCanvasOffset;
-    const y = event.y - this.yCanvasOffset + this.shapeSize/2;
+    const y = event.y - this.yCanvasOffset;
     this.animateDrag(x, y, this.draggedNode.x, this.draggedNode.y);
   }
 
   animateDrag(x: number, y: number, x0: number, y0: number) {
+    const initialVariableColor = "green"
+    const draggedVariableColor = "yellow"
     this.reprint();
-    this.drawVariable(x0, y0, "green");
-    this.drawVariable(x, y, "yellow");
+    this.drawVariable(x0, y0, initialVariableColor);
+    this.drawVariable(x, y, draggedVariableColor);
   }
 
   drawVariable(x: number, y: number, color: string) {
