@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import { AlgebraService } from '../algebra.service';
 import { Grid, EqGroup, GroupTypeEnum } from '../grid';
 import { GridService } from '../grid.service';
 import { MouseService } from '../mouse.service';
@@ -27,7 +28,9 @@ export class CanvasComponent implements AfterViewInit {
   @ViewChild('gameCanvas', {static: false, read: ElementRef}) canvas: ElementRef;
   context: CanvasRenderingContext2D;
 
-  constructor(private gridService: GridService, private mouse: MouseService) {}
+  constructor(private gridService: GridService,
+              private mouse: MouseService,
+              private algebraService: AlgebraService) {}
 
 
   ngAfterViewInit(): void {
@@ -68,11 +71,12 @@ export class CanvasComponent implements AfterViewInit {
     }
     if (this.mouse.isDragging) {
       this.animateDrag(closestNode, this.draggedNode)
-    } else {
+      this.mouse.handleMouseEvent(event);
+    } else if (this.algebraService.isMoveableVariable(closestNode, this.grid)) {
       this.draggedNode = closestNode;
       this.animateDrag(mouseNode, closestNode);
+      this.mouse.handleMouseEvent(event);
     }
-    this.mouse.handleMouseEvent(event);
   }
 
   onMouseMove(event: any): void {
