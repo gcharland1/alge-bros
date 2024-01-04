@@ -33,6 +33,21 @@ export class GridService {
     return closestNode
   }
 
+  shrinkGridInHalf(grid: Grid, axis: number) : Grid {
+    for (let i=0; i<grid.nodes.length;i ++) {
+      if (axis === 0) {
+        grid.nodes[i].width = grid.nodes[i].width/2;
+      } else {
+        grid.nodes[i].height = grid.nodes[i].height/2;
+      }
+      if (grid.nodes[i].nodes) {
+        grid.nodes[i] = this.shrinkGridInHalf(grid.nodes[i], axis);
+      }
+    }
+    return grid;
+  }
+
+
   getDistanceToNode(node: Grid, x: number, y: number): number {
     return (node.x - x)**2 + (node.y - y)**2;
   }

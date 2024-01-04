@@ -9,10 +9,12 @@ export class AlgebraService {
   constructor() { }
 
   // TODO: ( Ajouter simplifiy(Grid) {} )
+
   swapVariabe(variable: Grid, completeGrid: Grid) : Grid {
     const parentGrid: Grid = this.findParentGroup(variable, completeGrid);
     const newParentIndex: number = completeGrid.nodes.length - completeGrid.nodes.indexOf(parentGrid) - 1;
     const newParentGrid: Grid = completeGrid.nodes[newParentIndex];
+    console.log({newParentGrid, newParentIndex});
 
     let inverseOperator: GroupTypeEnum;
     switch (parentGrid.operator) {
@@ -22,6 +24,7 @@ export class AlgebraService {
     }
     const newLHS: Grid = this.removeFromParent(variable, parentGrid);
     const newRHS: Grid = this.addToParent(variable, newParentGrid, inverseOperator);
+    console.log({newLHS, newRHS});
 
     return {...completeGrid,
       nodes: [newLHS, newRHS]
