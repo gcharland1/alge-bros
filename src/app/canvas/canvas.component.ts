@@ -10,7 +10,7 @@ import { MouseService } from '../mouse.service';
   styleUrls: ['./canvas.component.css']
 })
 export class CanvasComponent implements AfterViewInit {
-  equationString: string = 'a*x + b = c/3 + 1';
+  equationString: string = 'a*b + x = c/3 + x';
 
   private width: number;
   private height: number;
@@ -70,6 +70,9 @@ export class CanvasComponent implements AfterViewInit {
       height: 0,
     }
     if (this.mouse.isDragging) {
+      console.log("Swap!");
+      this.grid = this.algebraService.swapVariabe(this.draggedNode, this.grid);
+      this.reprint();
       this.animateDrag(closestNode, this.draggedNode)
       this.mouse.handleMouseEvent(event);
     } else if (this.algebraService.isMoveableVariable(closestNode, this.grid)) {
@@ -128,8 +131,6 @@ export class CanvasComponent implements AfterViewInit {
 
     grid.nodes.forEach((node) => {
       if (node.operator === GroupTypeEnum.var) {
-        const x = node.x;
-        const y = node.y;
         this.drawVariable(node);
       } else {
         this.drawOperator(node);
