@@ -40,21 +40,24 @@ export class CanvasComponent implements AfterViewInit {
     this.context = this.canvas.nativeElement.getContext('2d');
     this.shapeSize = this.height / 10;
 
-    this.equation = this.gridService.parseEquation(this.equationString, GroupTypeEnum.eq);
-    console.log(this.equation);
-    this.grid = this.gridService.convertEquationToGrid(this.equation,
-                                           this.width,
-                                           this.height,
-                                           0,
-                                           0);
+    this.grid = this.gridService.scaleGrid(
+      this.gridService.parseEquation(this.equationString, GroupTypeEnum.eq),
+      this.width,
+      this.height
+    );
+    this.reprint();
+    console.log(this.grid);
 
     this.runGame();
   }
 
   onSumbit(event: any): void {
     this.equationString = event.target.value;
-    this.equation = this.gridService.parseEquation(this.equationString, GroupTypeEnum.eq);
-    this.grid = this.gridService.convertEquationToGrid(this.equation, this.width, this.height, 0, 0);
+    this.grid = this.gridService.scaleGrid(
+      this.gridService.parseEquation(this.equationString, GroupTypeEnum.eq),
+      this.width,
+      this.height
+    );
     this.reprint();
   }
 
@@ -97,26 +100,14 @@ export class CanvasComponent implements AfterViewInit {
     this.context.fillStyle = "grey";
     this.context.fillRect(0, 0, this.width, this.height);
 
-    this.drawEquationGrid(this.grid, true);
+    this.drawEquationGrid(this.grid);
   }
 
   runGame() {
     this.reprint();
   }
 
-  drawEquationGrid(grid: Grid, drawEqualSign?: boolean) {
-    if (drawEqualSign) {
-      const eqNode: Grid = {
-        x: 0,
-        y: 0,
-        width: this.width,
-        height: this.height,
-        nodes: [],
-        operator: GroupTypeEnum.eq,
-      }
-      this.drawOperator(eqNode);
-    }
-
+  drawEquationGrid(grid: Grid) {
     grid.nodes.forEach((node) => {
       if (node.operator === GroupTypeEnum.var) {
         const x = node.x;

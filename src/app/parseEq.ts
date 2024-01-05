@@ -1,69 +1,11 @@
-import { Injectable } from '@angular/core';
 import { Grid, GroupTypeEnum} from './grid';
 
-@Injectable({
-  providedIn: 'root'
-})
 export class GridService {
+  equation: Grid;
+  grid: Grid;
   horizontalTypesList = ["add", "sus", "mult", "eq"];
 
   constructor() {}
-
-  getClosestNode(grid: Grid, x: number, y: number): Grid {
-    const self = this
-    let closestNode: Grid;
-
-    grid.nodes.forEach((node) => {
-      if (node.operator === GroupTypeEnum.var) {
-        if (!closestNode) {
-          closestNode = node;
-        } else if (this.getDistanceToNode(node, x, y) < this.getDistanceToNode(closestNode, x, y)) {
-          closestNode = node;
-        }
-      } else {
-        const childClosestNode = self.getClosestNode(node, x, y);
-        if (!closestNode || this.getDistanceToNode(childClosestNode, x, y) < this.getDistanceToNode(closestNode, x, y)) {
-          closestNode = childClosestNode;
-        }
-      }
-    });
-
-    return closestNode
-  }
-
-  getDistanceToNode(node: Grid, x: number, y: number): number {
-    return (node.x - x)**2 + (node.y - y)**2;
-  }
-
-  scaleGrid(grid: Grid, width: number, height: number): Grid {
-    if (grid.operator === GroupTypeEnum.var || !grid.nodes) {
-      return {...grid,
-        width,
-        height,
-      }
-    }
-
-    let nParts = grid.nodes.length;
-    if (this.horizontalTypesList.includes(grid.operator)) {
-      innerWidth = width / nParts;
-      innerHeight = height;
-    } else {
-      innerWidth= width;
-      innerHeight= height / nParts;
-    }
-
-    for (let i=0; i<nParts; i++) {
-      grid.nodes[i] = {...this.scaleGrid(grid.nodes[i], innerWidth, innerHeight),
-        x: width === innerWidth ? width/2 : i*width/nParts,
-        y: height === innerWidth ? height/2 : i*height/nParts,
-      };
-    }
-
-    return {...grid,
-      width,
-      height,
-    };
-  }
 
   /**
     * Parses math equation to @Grid object
@@ -84,6 +26,7 @@ export class GridService {
       nodes: [],
     };
 
+    // Switch case dans les autres cas ?
     switch (priorityLevel) {
       case GroupTypeEnum.eq:
         equation = equation.split(' ').join('');
@@ -136,5 +79,4 @@ export class GridService {
 
     return equation.split(operatorRegexp[operator]).filter(_ => _.length > 0);
   };
-
 }
