@@ -63,7 +63,6 @@ export class CanvasComponent implements AfterViewInit {
     const x = event.x - this.xCanvasOffset;
     const y = event.y - this.yCanvasOffset;
     const closestNode: Grid = this.gridService.getClosestNode(this.grid, x, y);
-    console.log(closestNode);
     const mouseNode = {
       x,
       y,
@@ -71,9 +70,9 @@ export class CanvasComponent implements AfterViewInit {
       height: 0,
     }
     if (this.mouse.isDragging) {
-      console.log("Swap!");
+      console.log("Swap!", this.grid.nodes);
       this.grid = this.algebraService.swapVariabe(this.draggedNode, this.grid);
-      console.log(this.grid);
+      console.log(this.grid.nodes);
       this.reprint();
       this.animateDrag(closestNode, this.draggedNode)
       this.mouse.handleMouseEvent(event);

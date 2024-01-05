@@ -34,17 +34,27 @@ export class GridService {
   }
 
   shrinkGridInHalf(grid: Grid, axis: number) : Grid {
-    for (let i=0; i<grid.nodes.length;i ++) {
-      if (axis === 0) {
-        grid.nodes[i].width = grid.nodes[i].width/2;
-      } else {
-        grid.nodes[i].height = grid.nodes[i].height/2;
-      }
-      if (grid.nodes[i].nodes) {
-        grid.nodes[i] = this.shrinkGridInHalf(grid.nodes[i], axis);
-      }
+    if (grid.operator === GroupTypeEnum.var) {
+        return {...grid,
+          x: grid.x - grid.width/4,
+          width: grid.width/2,
+          height: grid.height/2,
+        }
     }
-    return grid;
+    for (let i=0; i<grid.nodes.length; i ++) {
+      let node = {...grid.nodes[i] };
+      grid.nodes[i] = { ...node,
+          x: node.x - node.width/4,
+          width: node.width/2,
+          height: node.height/2,
+        }
+      }
+
+      return { ...grid,
+          x: grid.x - grid.width/4,
+          width: grid.width/2,
+          height: grid.height/2,
+        };
   }
 
 

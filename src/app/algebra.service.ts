@@ -14,7 +14,6 @@ export class AlgebraService {
     const parentGrid: Grid = this.findParentGroup(variable, completeGrid);
     const newParentIndex: number = completeGrid.nodes.length - completeGrid.nodes.indexOf(parentGrid) - 1;
     const newParentGrid: Grid = completeGrid.nodes[newParentIndex];
-    console.log({newParentGrid, newParentIndex});
 
     let inverseOperator: GroupTypeEnum;
     switch (parentGrid.operator) {
@@ -34,7 +33,10 @@ export class AlgebraService {
   addToParent(variable: Grid, newParent: Grid, operator: GroupTypeEnum): Grid {
     if (newParent.nodes.length > 2) { return newParent};
 
+    // TODO: If operator=+ et newParent.operator=-, faire une node triple avec les + et -?
     return {...newParent,
+      width: newParent.width + variable.width,
+      x: newParent.x - variable.width,
       operator: operator,
       nodes: [{...newParent,
         width: newParent.width/2,
@@ -44,10 +46,13 @@ export class AlgebraService {
     };
   }
 
+  /**
+    * Returns the parent without the specified variable
+  * rFP([Ax + b], b) => Ax
+  */
   removeFromParent(variable: Grid, parentGrid: Grid): Grid {
     if (parentGrid.nodes.length > 2) {
-      console.log("x = y = z ???", parentGrid);
-      return parentGrid;
+        throw new Error("ParentGrid.nodes must have a length of two (a = b)");
     }
 
     for (let i = 0; i < parentGrid.nodes.length; i++) {
@@ -55,6 +60,7 @@ export class AlgebraService {
         return {...parentGrid.nodes[i]};
       }
     }
+    console.log(`Variable ${variable} nor in parent`);
     return parentGrid;
   }
 
