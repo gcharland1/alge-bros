@@ -43,25 +43,25 @@ export class GridService {
       }
     }
 
+    const isHorizontal = this.horizontalTypesList.includes(grid.operator);
     let nParts = grid.nodes.length;
-    if (this.horizontalTypesList.includes(grid.operator)) {
-      innerWidth = width / nParts;
-      innerHeight = height;
-    } else {
-      innerWidth= width;
-      innerHeight= height / nParts;
-    }
+    const innerWidth = isHorizontal ? width/nParts : width;
+    const innerHeight = isHorizontal ? height : height/nParts;
 
+    // EN HAUT À GAUCHE
     for (let i=0; i<nParts; i++) {
+      console.log({i, innerHeight, innerWidth});
       grid.nodes[i] = {...this.scaleGrid(grid.nodes[i], innerWidth, innerHeight),
-        x: width === innerWidth ? width/2 : i*width/nParts,
-        y: height === innerWidth ? height/2 : i*height/nParts,
+        x: isHorizontal ? i*innerWidth : 0,
+        y: isHorizontal ? 0 : i*innerHeight,
       };
     }
 
     return {...grid,
       width,
       height,
+      x: 0,
+      y: 0,
     };
   }
 
